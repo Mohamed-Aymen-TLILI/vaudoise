@@ -2,6 +2,7 @@ package com.test.vaudoise.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.vaudoise.application.usecase.CreateClientUseCase;
+import com.test.vaudoise.application.usecase.ReadClientUseCase;
 import com.test.vaudoise.core.exception.ValidationException;
 import com.test.vaudoise.domain.model.*;
 import com.test.vaudoise.infrastructure.persistance.memory.InMemoryClientRepo;
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -37,7 +39,10 @@ class ClientControllerIT {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private CreateClientUseCase create;
+    private CreateClientUseCase createClientUseCase;
+
+    @MockitoBean
+    private ReadClientUseCase readClientUseCase;
 
     @Test
     void should_create_person_and_return_201() throws Exception {
@@ -49,7 +54,7 @@ class ClientControllerIT {
                 LocalDate.of(1990, 1, 1)
         );
 
-        Mockito.when(create.execute(Mockito.any(Person.class))).thenReturn(person);
+        Mockito.when(createClientUseCase.execute(Mockito.any(Person.class))).thenReturn(person);
 
         var request = new CreatePersonRequest("Mohamed Aymen TLILI", "matlili@example.com", "+41791234567", LocalDate.of(1990, 1, 1));
 
@@ -72,7 +77,7 @@ class ClientControllerIT {
                 new CompanyIdentifier("vaa-123")
         );
 
-        Mockito.when(create.execute(Mockito.any(Company.class))).thenReturn(company);
+        Mockito.when(createClientUseCase.execute(Mockito.any(Company.class))).thenReturn(company);
 
         var request = new CreateCompanyRequest(
                 "Vaudoise Assurances",
@@ -101,7 +106,7 @@ class ClientControllerIT {
                 "vaa-123"
         );
 
-        Mockito.when(create.execute(Mockito.any(Company.class)))
+        Mockito.when(createClientUseCase.execute(Mockito.any(Company.class)))
                 .thenThrow(new ValidationException("companyIdentifier already exists"));
 
         mvc.perform(post("/api/clients/company")
@@ -210,7 +215,7 @@ class ClientControllerIT {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Validation failed"))
                 .andExpect(jsonPath("$.count").value(4))
-                .andExpect(jsonPath("$.details[?(@.field == 'birthdate')].message").value("birthdate is required"));
+                .andExpect(jsonPath("$.details[?(@.field == 'birthdate')].message").value("Birthdate is required"));
     }
 
     @Test
@@ -242,8 +247,8 @@ class ClientControllerIT {
     void should_return_400_when_birthdate_not_iso_format() throws Exception {
         var invalidJson = """
         {
-          "name": "John Doe",
-          "email": "john.doe@example.com",
+          "name": "Mohamed Aymen TLILI",
+          "email": "matili@example.com",
           "phone": "+41791234567",
           "birthdate": "01.01.1990"
         }
@@ -254,6 +259,44 @@ class ClientControllerIT {
                         .content(invalidJson))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Invalid date format, expected ISO 8601 (yyyy-MM-dd)"));
+    }
+
+
+    @Test
+    void should_return_person_when_exists() throws Exception {
+        var id = UUID.randomUUID();
+        var person = new Person(
+                new ClientId(id),
+                new Name("Mohamed Aymen TLILI"),
+                new Email("matili@example.com"),
+                new Phone("+41791234567"),
+                LocalDate.of(1990, 1, 1)
+        );
+        Mockito.when(readClientUseCase.execute(new ClientId(id))).thenReturn(person);
+
+        mvc.perform(get("/api/clients/" + id))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(id.toString()))
+                .andExpect(jsonPath("$.name").value("Mohamed Aymen TLILI"))
+                .andExpect(jsonPath("$.email").value("matili@example.com"))
+                .andExpect(jsonPath("$.phone").value("+41791234567"))
+                .andExpect(jsonPath("$.birthdate").value("1990-01-01"))
+                .andExpect(jsonPath("$.type").value("PERSON"));
+
+    }
+
+    @Test
+    void should_return_400_when_client_not_found() throws Exception {
+        var id = UUID.randomUUID();
+
+        Mockito.when(readClientUseCase.execute(Mockito.any(ClientId.class)))
+                .thenThrow(new ValidationException("Client not found"));
+
+        mvc.perform(get("/api/clients/" + id))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("Client not found"));
     }
 
 

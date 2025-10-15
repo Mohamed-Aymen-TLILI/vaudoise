@@ -12,7 +12,7 @@ public record CreatePersonRequest(
         String email,
         @NotBlank(message = "phone is required")
         String phone,
-        @NotBlank(message = "birthdate is required")
+        @NotBlank(message = "Birthdate is required")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate birthdate
 ) {}

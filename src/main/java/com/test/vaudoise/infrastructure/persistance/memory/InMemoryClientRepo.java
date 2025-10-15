@@ -2,11 +2,13 @@ package com.test.vaudoise.infrastructure.persistance.memory;
 
 import com.test.vaudoise.core.exception.ValidationException;
 import com.test.vaudoise.domain.model.Client;
+import com.test.vaudoise.domain.model.ClientId;
 import com.test.vaudoise.domain.model.Company;
 import com.test.vaudoise.domain.model.CompanyIdentifier;
 import com.test.vaudoise.domain.ports.ClientRepositoryPort;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,6 +33,11 @@ public class InMemoryClientRepo implements ClientRepositoryPort {
         @Override
         public boolean existsCompanyIdentifier(CompanyIdentifier companyId) {
             return byCompanyId.containsKey(companyId.value());
+        }
+
+        @Override
+        public Optional<Client> findById(ClientId id) {
+            return Optional.ofNullable(byId.get(id.value()));
         }
 
 
