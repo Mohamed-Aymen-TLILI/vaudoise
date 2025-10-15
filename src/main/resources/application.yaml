@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: vaudoise
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.jdbc.time_zone: UTC
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vaudoise
+    username: postgres
+    password: monpassword
+
