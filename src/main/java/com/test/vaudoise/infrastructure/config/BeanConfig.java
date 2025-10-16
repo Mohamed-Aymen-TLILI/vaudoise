@@ -2,6 +2,7 @@ package com.test.vaudoise.infrastructure.config;
 
 import com.test.vaudoise.application.usecase.CreateClientUseCase;
 import com.test.vaudoise.application.usecase.ReadClientUseCase;
+import com.test.vaudoise.application.usecase.UpdateClientUseCase;
 import com.test.vaudoise.domain.ports.ClientRepositoryPort;
 import com.test.vaudoise.infrastructure.persistance.memory.InMemoryClientRepo;
 import org.springframework.context.annotation.Bean;
@@ -24,5 +25,10 @@ public class BeanConfig {
     @Bean
     ReadClientUseCase readClientUseCase(ClientRepositoryPort repo) {
         return new ReadClientUseCase(repo);
+    }
+
+    @Bean
+    UpdateClientUseCase updateClientUseCase(ClientRepositoryPort repo) {
+        return new UpdateClientUseCase(repo);
     }
 }

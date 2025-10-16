@@ -3,12 +3,15 @@ package com.test.vaudoise.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.vaudoise.application.usecase.CreateClientUseCase;
 import com.test.vaudoise.application.usecase.ReadClientUseCase;
+import com.test.vaudoise.application.usecase.UpdateClientUseCase;
+import com.test.vaudoise.core.exception.NotFoundException;
 import com.test.vaudoise.core.exception.ValidationException;
 import com.test.vaudoise.domain.model.*;
 import com.test.vaudoise.infrastructure.persistance.memory.InMemoryClientRepo;
 import com.test.vaudoise.infrastructure.web.controller.ClientController;
 import com.test.vaudoise.infrastructure.web.dto.CreateCompanyRequest;
 import com.test.vaudoise.infrastructure.web.dto.CreatePersonRequest;
+import com.test.vaudoise.infrastructure.web.dto.UpdateClientRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +25,11 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ClientController.class)
-class ClientControllerIT {
+class ClientControllerTest {
 
     private final InMemoryClientRepo repo = new InMemoryClientRepo();
     private final CreateClientUseCase usecase = new CreateClientUseCase(repo);
@@ -43,6 +45,9 @@ class ClientControllerIT {
 
     @MockitoBean
     private ReadClientUseCase readClientUseCase;
+
+    @MockitoBean
+    private UpdateClientUseCase updateClientUseCase;
 
     @Test
     void should_create_person_and_return_201() throws Exception {
@@ -291,11 +296,52 @@ class ClientControllerIT {
         var id = UUID.randomUUID();
 
         Mockito.when(readClientUseCase.execute(Mockito.any(ClientId.class)))
-                .thenThrow(new ValidationException("Client not found"));
+                .thenThrow(new NotFoundException("Client not found"));
 
         mvc.perform(get("/api/clients/" + id))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.error").value("Client not found"));
+    }
+
+
+    @Test
+    void should_update_person_and_return_200() throws Exception {
+        var id = UUID.randomUUID();
+        var person = new Person(
+                new ClientId(id),
+                new Name("Updated Name"),
+                new Email("updated@example.com"),
+                new Phone("+41795551234"),
+                LocalDate.of(1990, 1, 1)
+        );
+
+        Mockito.when(updateClientUseCase.execute(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(person);
+
+        var req = new UpdateClientRequest("Updated Name", "updated@example.com", "+41795551234");
+
+        mvc.perform(put("/api/clients/" + id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Updated Name"))
+                .andExpect(jsonPath("$.email").value("updated@example.com"));
+    }
+
+    @Test
+    void should_return_404_when_client_not_found() throws Exception {
+        var id = UUID.randomUUID();
+
+        Mockito.when(updateClientUseCase.execute(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenThrow(new NotFoundException("Client not found"));
+
+        var req = new UpdateClientRequest("Name", "email@example.com", "+41795551234");
+
+        mvc.perform(put("/api/clients/" + id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").value("Client not found"));
     }
 

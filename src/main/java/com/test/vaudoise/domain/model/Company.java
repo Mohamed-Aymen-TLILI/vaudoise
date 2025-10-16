@@ -5,4 +5,9 @@ public record Company(ClientId id, Name name, Email email, Phone phone, CompanyI
     public ClientType type() {
         return ClientType.COMPANY;
     }
+
+    @Override
+    public Client update(Name name, Email email, Phone phone) {
+        return new Company(this.id, name, email, phone, this.companyIdentifier);
+    }
 }

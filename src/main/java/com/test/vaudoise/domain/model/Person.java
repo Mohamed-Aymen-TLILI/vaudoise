@@ -14,4 +14,9 @@ public record Person(ClientId id, Name name, Email email, Phone phone, LocalDate
     public ClientType type() {
         return ClientType.PERSON;
     }
+
+    @Override
+    public Client update(Name name, Email email, Phone phone) {
+        return new Person(this.id, name, email, phone, this.birthdate);
+    }
 }

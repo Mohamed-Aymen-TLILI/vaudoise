@@ -1,7 +1,6 @@
 package com.test.vaudoise.application.usecase;
 
 import com.test.vaudoise.core.exception.NotFoundException;
-import com.test.vaudoise.core.exception.ValidationException;
 import com.test.vaudoise.domain.model.Client;
 import com.test.vaudoise.domain.model.ClientId;
 import com.test.vaudoise.domain.ports.ClientRepositoryPort;
