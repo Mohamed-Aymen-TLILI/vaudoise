@@ -1,8 +1,8 @@
-package com.test.vaudoise.application.usecase;
+package com.test.vaudoise.application.clientusecases;
 
 import com.test.vaudoise.core.exception.NotFoundException;
-import com.test.vaudoise.domain.model.Client;
-import com.test.vaudoise.domain.model.ClientId;
+import com.test.vaudoise.domain.model.client.Client;
+import com.test.vaudoise.domain.model.client.ClientId;
 import com.test.vaudoise.domain.ports.ClientRepositoryPort;
 
 import java.util.Optional;

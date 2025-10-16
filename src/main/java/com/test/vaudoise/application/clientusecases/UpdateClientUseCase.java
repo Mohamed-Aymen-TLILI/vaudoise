@@ -1,7 +1,7 @@
-package com.test.vaudoise.application.usecase;
+package com.test.vaudoise.application.clientusecases;
 
 import com.test.vaudoise.core.exception.NotFoundException;
-import com.test.vaudoise.domain.model.*;
+import com.test.vaudoise.domain.model.client.*;
 import com.test.vaudoise.domain.ports.ClientRepositoryPort;
 
 public class UpdateClientUseCase {

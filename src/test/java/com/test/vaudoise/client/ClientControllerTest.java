@@ -1,17 +1,17 @@
 package com.test.vaudoise.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.test.vaudoise.application.usecase.CreateClientUseCase;
-import com.test.vaudoise.application.usecase.ReadClientUseCase;
-import com.test.vaudoise.application.usecase.UpdateClientUseCase;
+import com.test.vaudoise.application.clientusecases.CreateClientUseCase;
+import com.test.vaudoise.application.clientusecases.ReadClientUseCase;
+import com.test.vaudoise.application.clientusecases.UpdateClientUseCase;
 import com.test.vaudoise.core.exception.NotFoundException;
 import com.test.vaudoise.core.exception.ValidationException;
-import com.test.vaudoise.domain.model.*;
+import com.test.vaudoise.domain.model.client.*;
 import com.test.vaudoise.infrastructure.persistance.memory.InMemoryClientRepo;
 import com.test.vaudoise.infrastructure.web.controller.ClientController;
-import com.test.vaudoise.infrastructure.web.dto.CreateCompanyRequest;
-import com.test.vaudoise.infrastructure.web.dto.CreatePersonRequest;
-import com.test.vaudoise.infrastructure.web.dto.UpdateClientRequest;
+import com.test.vaudoise.infrastructure.web.dto.client.CreateCompanyRequest;
+import com.test.vaudoise.infrastructure.web.dto.client.CreatePersonRequest;
+import com.test.vaudoise.infrastructure.web.dto.client.UpdateClientRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,8 @@
-package com.test.vaudoise.application.usecase;
+package com.test.vaudoise.application.clientusecases;
 
 import com.test.vaudoise.core.exception.ValidationException;
-import com.test.vaudoise.domain.model.Client;
-import com.test.vaudoise.domain.model.Company;
+import com.test.vaudoise.domain.model.client.Client;
+import com.test.vaudoise.domain.model.client.Company;
 import com.test.vaudoise.domain.ports.ClientRepositoryPort;
 
 public class CreateClientUseCase {

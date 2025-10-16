@@ -1,10 +1,13 @@
 package com.test.vaudoise.infrastructure.config;
 
-import com.test.vaudoise.application.usecase.CreateClientUseCase;
-import com.test.vaudoise.application.usecase.ReadClientUseCase;
-import com.test.vaudoise.application.usecase.UpdateClientUseCase;
+import com.test.vaudoise.application.clientusecases.CreateClientUseCase;
+import com.test.vaudoise.application.clientusecases.ReadClientUseCase;
+import com.test.vaudoise.application.clientusecases.UpdateClientUseCase;
+import com.test.vaudoise.application.contractusecases.CreateContractUseCase;
 import com.test.vaudoise.domain.ports.ClientRepositoryPort;
+import com.test.vaudoise.domain.ports.ContractRepositoryPort;
 import com.test.vaudoise.infrastructure.persistance.memory.InMemoryClientRepo;
+import com.test.vaudoise.infrastructure.persistance.memory.InMemoryContractRepo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,6 +19,10 @@ public class BeanConfig {
         return new InMemoryClientRepo();
     }
 
+    @Bean
+    ContractRepositoryPort contractRepositoryPort() {
+        return new InMemoryContractRepo();
+    }
 
     @Bean
     CreateClientUseCase createClientUseCase(ClientRepositoryPort repo) {
@@ -30,5 +37,10 @@ public class BeanConfig {
     @Bean
     UpdateClientUseCase updateClientUseCase(ClientRepositoryPort repo) {
         return new UpdateClientUseCase(repo);
+    }
+
+    @Bean
+    CreateContractUseCase createContractUseCase(ContractRepositoryPort contractRepositoryPort, ClientRepositoryPort clientRepository) {
+        return new CreateContractUseCase(contractRepositoryPort, clientRepository);
     }
 }

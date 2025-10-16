@@ -1,4 +1,4 @@
-package com.test.vaudoise.domain.model;
+package com.test.vaudoise.domain.model.client;
 
 
 import com.test.vaudoise.core.exception.ValidationException;

@@ -1,10 +1,10 @@
-package com.test.vaudoise.infrastructure.web.mapper;
+package com.test.vaudoise.infrastructure.web.mapper.client;
 
-import com.test.vaudoise.domain.model.Client;
-import com.test.vaudoise.domain.model.Company;
-import com.test.vaudoise.domain.model.Person;
-import com.test.vaudoise.infrastructure.web.dto.ClientType;
-import com.test.vaudoise.infrastructure.web.dto.ClientResponse;
+import com.test.vaudoise.domain.model.client.Client;
+import com.test.vaudoise.domain.model.client.Company;
+import com.test.vaudoise.domain.model.client.Person;
+import com.test.vaudoise.infrastructure.web.dto.client.ClientType;
+import com.test.vaudoise.infrastructure.web.dto.client.ClientResponse;
 
 public class ClientMapper {
 

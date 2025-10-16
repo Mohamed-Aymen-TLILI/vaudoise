@@ -1,7 +1,7 @@
 package com.test.vaudoise.client.model;
 
 import com.test.vaudoise.core.exception.ValidationException;
-import com.test.vaudoise.domain.model.Email;
+import com.test.vaudoise.domain.model.client.Email;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

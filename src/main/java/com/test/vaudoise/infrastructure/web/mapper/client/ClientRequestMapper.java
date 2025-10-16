@@ -1,9 +1,8 @@
-package com.test.vaudoise.infrastructure.web.mapper;
+package com.test.vaudoise.infrastructure.web.mapper.client;
 
-import com.test.vaudoise.domain.model.*;
-import com.test.vaudoise.infrastructure.web.dto.CreateCompanyRequest;
-import com.test.vaudoise.infrastructure.web.dto.CreatePersonRequest;
-import com.test.vaudoise.infrastructure.web.dto.UpdateClientRequest;
+import com.test.vaudoise.domain.model.client.*;
+import com.test.vaudoise.infrastructure.web.dto.client.CreateCompanyRequest;
+import com.test.vaudoise.infrastructure.web.dto.client.CreatePersonRequest;
 
 import java.util.UUID;
 

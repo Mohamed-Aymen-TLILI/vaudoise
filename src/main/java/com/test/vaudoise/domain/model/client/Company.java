@@ -1,4 +1,4 @@
-package com.test.vaudoise.domain.model;
+package com.test.vaudoise.domain.model.client;
 
 public record Company(ClientId id, Name name, Email email, Phone phone, CompanyIdentifier companyIdentifier) implements Client {
     @Override

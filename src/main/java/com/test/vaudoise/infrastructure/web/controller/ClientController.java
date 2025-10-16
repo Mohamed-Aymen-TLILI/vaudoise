@@ -1,15 +1,15 @@
 package com.test.vaudoise.infrastructure.web.controller;
 
-import com.test.vaudoise.application.usecase.CreateClientUseCase;
-import com.test.vaudoise.application.usecase.ReadClientUseCase;
-import com.test.vaudoise.application.usecase.UpdateClientUseCase;
-import com.test.vaudoise.domain.model.*;
-import com.test.vaudoise.infrastructure.web.dto.ClientResponse;
-import com.test.vaudoise.infrastructure.web.dto.CreateCompanyRequest;
-import com.test.vaudoise.infrastructure.web.dto.CreatePersonRequest;
-import com.test.vaudoise.infrastructure.web.dto.UpdateClientRequest;
-import com.test.vaudoise.infrastructure.web.mapper.ClientMapper;
-import com.test.vaudoise.infrastructure.web.mapper.ClientRequestMapper;
+import com.test.vaudoise.application.clientusecases.CreateClientUseCase;
+import com.test.vaudoise.application.clientusecases.ReadClientUseCase;
+import com.test.vaudoise.application.clientusecases.UpdateClientUseCase;
+import com.test.vaudoise.domain.model.client.ClientId;
+import com.test.vaudoise.infrastructure.web.dto.client.ClientResponse;
+import com.test.vaudoise.infrastructure.web.dto.client.CreateCompanyRequest;
+import com.test.vaudoise.infrastructure.web.dto.client.CreatePersonRequest;
+import com.test.vaudoise.infrastructure.web.dto.client.UpdateClientRequest;
+import com.test.vaudoise.infrastructure.web.mapper.client.ClientMapper;
+import com.test.vaudoise.infrastructure.web.mapper.client.ClientRequestMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.test.vaudoise.infrastructure.web.dto;
+package com.test.vaudoise.infrastructure.web.dto.client;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;

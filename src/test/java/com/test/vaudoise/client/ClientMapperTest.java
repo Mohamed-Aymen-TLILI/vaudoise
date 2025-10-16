@@ -1,8 +1,8 @@
 package com.test.vaudoise.client;
 
-import com.test.vaudoise.domain.model.*;
-import com.test.vaudoise.infrastructure.web.dto.ClientType;
-import com.test.vaudoise.infrastructure.web.mapper.ClientMapper;
+import com.test.vaudoise.domain.model.client.*;
+import com.test.vaudoise.infrastructure.web.dto.client.ClientType;
+import com.test.vaudoise.infrastructure.web.mapper.client.ClientMapper;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;

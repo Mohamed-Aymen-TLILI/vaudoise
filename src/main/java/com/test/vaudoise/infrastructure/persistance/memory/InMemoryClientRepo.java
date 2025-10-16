@@ -1,10 +1,10 @@
 package com.test.vaudoise.infrastructure.persistance.memory;
 
 import com.test.vaudoise.core.exception.ValidationException;
-import com.test.vaudoise.domain.model.Client;
-import com.test.vaudoise.domain.model.ClientId;
-import com.test.vaudoise.domain.model.Company;
-import com.test.vaudoise.domain.model.CompanyIdentifier;
+import com.test.vaudoise.domain.model.client.Client;
+import com.test.vaudoise.domain.model.client.ClientId;
+import com.test.vaudoise.domain.model.client.Company;
+import com.test.vaudoise.domain.model.client.CompanyIdentifier;
 import com.test.vaudoise.domain.ports.ClientRepositoryPort;
 
 import java.util.Map;

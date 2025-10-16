@@ -1,9 +1,8 @@
 package com.test.vaudoise.client;
 
 import com.test.vaudoise.core.exception.ValidationException;
-import com.test.vaudoise.domain.model.*;
+import com.test.vaudoise.domain.model.client.*;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 import java.time.LocalDate;
 import java.util.UUID;

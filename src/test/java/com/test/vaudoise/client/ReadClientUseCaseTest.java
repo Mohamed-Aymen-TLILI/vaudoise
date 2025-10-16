@@ -1,8 +1,8 @@
 package com.test.vaudoise.client;
 
-import com.test.vaudoise.application.usecase.ReadClientUseCase;
+import com.test.vaudoise.application.clientusecases.ReadClientUseCase;
 import com.test.vaudoise.core.exception.NotFoundException;
-import com.test.vaudoise.domain.model.*;
+import com.test.vaudoise.domain.model.client.*;
 import com.test.vaudoise.domain.ports.ClientRepositoryPort;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

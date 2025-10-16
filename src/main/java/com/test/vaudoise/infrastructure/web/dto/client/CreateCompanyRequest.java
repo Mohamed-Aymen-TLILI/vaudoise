@@ -1,4 +1,4 @@
-package com.test.vaudoise.infrastructure.web.dto;
+package com.test.vaudoise.infrastructure.web.dto.client;
 
 import jakarta.validation.constraints.Email;
 

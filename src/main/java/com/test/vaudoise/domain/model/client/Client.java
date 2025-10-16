@@ -1,4 +1,4 @@
-package com.test.vaudoise.domain.model;
+package com.test.vaudoise.domain.model.client;
 
 public  sealed interface Client  permits Person, Company {
     ClientId id ();

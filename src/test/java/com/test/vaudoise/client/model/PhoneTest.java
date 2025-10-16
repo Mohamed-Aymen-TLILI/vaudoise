@@ -1,7 +1,7 @@
 package com.test.vaudoise.client.model;
 
 import com.test.vaudoise.core.exception.ValidationException;
-import com.test.vaudoise.domain.model.Phone;
+import com.test.vaudoise.domain.model.client.Phone;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
