@@ -3,6 +3,7 @@ package com.test.vaudoise.contract;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.vaudoise.application.contractusecases.CreateContractUseCase;
 import com.test.vaudoise.application.contractusecases.FindContractsByClientUseCase;
+import com.test.vaudoise.application.contractusecases.GetTotalActiveCostUseCase;
 import com.test.vaudoise.application.contractusecases.UpdateContractCostUseCase;
 import com.test.vaudoise.core.exception.NotFoundException;
 import com.test.vaudoise.core.exception.ValidationException;
@@ -49,6 +50,9 @@ public class ContractControllerTest {
 
     @MockitoBean
     private FindContractsByClientUseCase findContractsByClientUseCase;
+
+    @MockitoBean
+    private GetTotalActiveCostUseCase getTotalActiveCostUseCase;
 
     @Test
     void should_create_contract_and_return_201() throws Exception {
@@ -246,4 +250,31 @@ public class ContractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].costAmount").value(350));
     }
+
+    @Test
+    void should_return_total_active_cost_for_client() throws Exception {
+        var clientId = UUID.randomUUID();
+
+        Mockito.when(getTotalActiveCostUseCase.execute(any()))
+                .thenReturn(BigDecimal.valueOf(450));
+
+        mvc.perform(get("/api/contracts/clients/" + clientId + "/contracts/total-active-cost")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string("450"));
+    }
+
+    @Test
+    void should_return_zero_when_no_active_contracts() throws Exception {
+        var clientId = UUID.randomUUID();
+
+        Mockito.when(getTotalActiveCostUseCase.execute(any()))
+                .thenReturn(BigDecimal.ZERO);
+
+        mvc.perform(get("/api/contracts/clients/" + clientId + "/contracts/total-active-cost")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string("0"));
+    }
+
 }
