@@ -39,9 +39,20 @@ public class Contract {
         this.endDate = LocalDate.now();
     }
 
+    public void updateCost(BigDecimal newCost) {
+        if (newCost == null || newCost.signum() < 0)
+            throw new ValidationException("Cost amount must be positive");
+
+        if (!this.costAmount.equals(newCost)) {
+            this.costAmount = newCost;
+            this.lastUpdateDate = LocalDateTime.now();
+        }
+    }
+
     public ContractId id() { return id; }
     public LocalDate startDate() { return startDate; }
     public LocalDate endDate() { return endDate; }
     public ClientId getClientId() {return clientId;}
     public BigDecimal getCostAmount() {return costAmount;}
+    public LocalDateTime getLastUpdateDate() {return lastUpdateDate;}
 }
