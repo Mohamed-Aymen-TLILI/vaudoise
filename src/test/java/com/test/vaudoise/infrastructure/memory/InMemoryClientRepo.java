@@ -1,4 +1,4 @@
-package com.test.vaudoise.infrastructure.persistance.memory;
+package com.test.vaudoise.infrastructure.memory;
 
 import com.test.vaudoise.core.exception.ValidationException;
 import com.test.vaudoise.domain.model.client.Client;

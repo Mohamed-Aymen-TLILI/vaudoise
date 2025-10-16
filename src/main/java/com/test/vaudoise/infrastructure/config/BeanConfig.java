@@ -10,8 +10,6 @@ import com.test.vaudoise.application.contractusecases.GetTotalActiveCostUseCase;
 import com.test.vaudoise.application.contractusecases.UpdateContractCostUseCase;
 import com.test.vaudoise.domain.ports.ClientRepositoryPort;
 import com.test.vaudoise.domain.ports.ContractRepositoryPort;
-import com.test.vaudoise.infrastructure.persistance.memory.InMemoryClientRepo;
-import com.test.vaudoise.infrastructure.persistance.memory.InMemoryContractRepo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,39 +17,29 @@ import org.springframework.context.annotation.Configuration;
 public class BeanConfig {
 
     @Bean
-    ClientRepositoryPort clientRepository() {
-        return new InMemoryClientRepo();
+    CreateClientUseCase createClientUseCase(ClientRepositoryPort clientRepository) {
+        return new CreateClientUseCase(clientRepository);
     }
 
     @Bean
-    ContractRepositoryPort contractRepositoryPort() {
-        return new InMemoryContractRepo();
+    ReadClientUseCase readClientUseCase(ClientRepositoryPort clientRepository) {
+        return new ReadClientUseCase(clientRepository);
     }
 
     @Bean
-    CreateClientUseCase createClientUseCase(ClientRepositoryPort repo) {
-        return new CreateClientUseCase(repo);
+    UpdateClientUseCase updateClientUseCase(ClientRepositoryPort clientRepository) {
+        return new UpdateClientUseCase(clientRepository);
     }
 
     @Bean
-    ReadClientUseCase readClientUseCase(ClientRepositoryPort repo) {
-        return new ReadClientUseCase(repo);
-    }
-
-    @Bean
-    UpdateClientUseCase updateClientUseCase(ClientRepositoryPort repo) {
-        return new UpdateClientUseCase(repo);
+    DeleteClientUseCase deleteClientUseCase(ClientRepositoryPort clientRepository, ContractRepositoryPort contractRepositoryPort) {
+        return new DeleteClientUseCase(clientRepository, contractRepositoryPort);
     }
 
     @Bean
     CreateContractUseCase createContractUseCase(ContractRepositoryPort contractRepositoryPort, ClientRepositoryPort clientRepository) {
         return new CreateContractUseCase(contractRepositoryPort, clientRepository);
     }
-
-    @Bean
-    DeleteClientUseCase deleteClientUseCase(ClientRepositoryPort clientRepository, ContractRepositoryPort contractRepositoryPort ) {
-        return new DeleteClientUseCase(clientRepository, contractRepositoryPort);
-    };
 
     @Bean
     UpdateContractCostUseCase updateContractCostUseCase(ContractRepositoryPort contractRepositoryPort) {
