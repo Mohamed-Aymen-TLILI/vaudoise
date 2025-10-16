@@ -2,6 +2,7 @@ package com.test.vaudoise.contract;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.vaudoise.application.contractusecases.CreateContractUseCase;
+import com.test.vaudoise.application.contractusecases.FindContractsByClientUseCase;
 import com.test.vaudoise.application.contractusecases.UpdateContractCostUseCase;
 import com.test.vaudoise.core.exception.NotFoundException;
 import com.test.vaudoise.core.exception.ValidationException;
@@ -23,12 +24,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = ContractController.class)
@@ -45,6 +46,9 @@ public class ContractControllerTest {
 
     @MockitoBean
     private UpdateContractCostUseCase updateContractCostUseCase;
+
+    @MockitoBean
+    private FindContractsByClientUseCase findContractsByClientUseCase;
 
     @Test
     void should_create_contract_and_return_201() throws Exception {
@@ -209,5 +213,37 @@ public class ContractControllerTest {
         assertThat(contract.getLastUpdateDate())
                 .isNotNull()
                 .isBeforeOrEqualTo(LocalDateTime.now());
+    }
+
+    @Test
+    void should_return_contracts_for_client() throws Exception {
+        var clientId = UUID.randomUUID();
+        var c1 = new Contract(new ContractId(UUID.randomUUID()), new ClientId(clientId), LocalDate.now(), null, BigDecimal.valueOf(100));
+        var c2 = new Contract(new ContractId(UUID.randomUUID()), new ClientId(clientId), LocalDate.now(), null, BigDecimal.valueOf(200));
+
+        Mockito.when(findContractsByClientUseCase.execute(any(), any()))
+                .thenReturn(List.of(c1, c2));
+
+        mvc.perform(get("/api/contracts/clients/" + clientId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].costAmount").value(100))
+                .andExpect(jsonPath("$[1].costAmount").value(200));
+    }
+
+    @Test
+    void should_filter_by_update_date() throws Exception {
+        var clientId = UUID.randomUUID();
+        var c = new Contract(new ContractId(UUID.randomUUID()), new ClientId(clientId), LocalDate.now(), null, BigDecimal.valueOf(300));
+        c.updateCost(BigDecimal.valueOf(350));
+
+        Mockito.when(findContractsByClientUseCase.execute(any(), any()))
+                .thenReturn(List.of(c));
+
+        mvc.perform(get("/api/contracts/clients/" + clientId)
+                        .param("updatedAfter", LocalDateTime.now().minusHours(1).toString())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].costAmount").value(350));
     }
 }

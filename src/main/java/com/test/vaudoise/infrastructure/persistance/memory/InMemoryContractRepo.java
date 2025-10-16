@@ -6,6 +6,7 @@ import com.test.vaudoise.domain.model.contrat.ContractId;
 import com.test.vaudoise.domain.ports.ContractRepositoryPort;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,4 +38,16 @@ public class InMemoryContractRepo  implements ContractRepositoryPort {
     public Optional<Contract> findById(ContractId id) {
         return Optional.ofNullable(storage.get(id.value()));
     }
+
+    @Override
+    public List<Contract> findByClientIdAndUpdatedAfter(ClientId clientId, LocalDateTime updatedAfter) {
+        LocalDate today = LocalDate.now();
+        return storage.values().stream()
+                .filter(c -> c.getClientId().equals(clientId))
+                .filter(c -> c.endDate() == null || c.endDate().isAfter(today)) // actifs seulement
+                .filter(c -> updatedAfter == null || // filtre optionnel
+                        (c.getLastUpdateDate() != null && c.getLastUpdateDate().isAfter(updatedAfter)))
+                .collect(Collectors.toList());
+    }
+
 }

@@ -1,7 +1,9 @@
 package com.test.vaudoise.infrastructure.web.controller;
 
 import com.test.vaudoise.application.contractusecases.CreateContractUseCase;
+import com.test.vaudoise.application.contractusecases.FindContractsByClientUseCase;
 import com.test.vaudoise.application.contractusecases.UpdateContractCostUseCase;
+import com.test.vaudoise.domain.model.client.ClientId;
 import com.test.vaudoise.domain.model.contrat.Contract;
 import com.test.vaudoise.domain.model.contrat.ContractId;
 import com.test.vaudoise.infrastructure.web.dto.contract.ContractResponse;
@@ -10,10 +12,13 @@ import com.test.vaudoise.infrastructure.web.mapper.contract.ContractMapper;
 import com.test.vaudoise.infrastructure.web.mapper.contract.ContractRequestMapper;
 import com.test.vaudoise.infrastructure.web.mapper.contract.UpdateCostRequest;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,10 +27,12 @@ public class ContractController {
 
     private final CreateContractUseCase createContractUseCase;
     private final UpdateContractCostUseCase updateContractCostUseCase;
+    private final FindContractsByClientUseCase findContractsByClientUseCase;
 
-    public ContractController(CreateContractUseCase createContractUseCase, UpdateContractCostUseCase updateContractCostUseCase) {
+    public ContractController(CreateContractUseCase createContractUseCase, UpdateContractCostUseCase updateContractCostUseCase, FindContractsByClientUseCase findContractsByClientUseCase) {
         this.createContractUseCase = createContractUseCase;
         this.updateContractCostUseCase = updateContractCostUseCase;
+        this.findContractsByClientUseCase = findContractsByClientUseCase;
     }
 
     @PostMapping("/create-new")
@@ -43,4 +50,16 @@ public class ContractController {
         var updated = updateContractCostUseCase.execute(new ContractId(id), request.newCost());
         return ResponseEntity.ok(ContractMapper.toResponse(updated));
     }
+
+    @GetMapping("/clients/{id}")
+    public ResponseEntity<List<ContractResponse>> getContracts(
+            @PathVariable UUID id,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime updatedAfter) {
+
+        var contracts = findContractsByClientUseCase.execute(new ClientId(id), updatedAfter);
+        return ResponseEntity.ok(contracts.stream().map(ContractMapper::toResponse).toList());
+    }
+
 }

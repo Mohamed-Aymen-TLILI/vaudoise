@@ -5,6 +5,7 @@ import com.test.vaudoise.application.clientusecases.DeleteClientUseCase;
 import com.test.vaudoise.application.clientusecases.ReadClientUseCase;
 import com.test.vaudoise.application.clientusecases.UpdateClientUseCase;
 import com.test.vaudoise.application.contractusecases.CreateContractUseCase;
+import com.test.vaudoise.application.contractusecases.FindContractsByClientUseCase;
 import com.test.vaudoise.application.contractusecases.UpdateContractCostUseCase;
 import com.test.vaudoise.domain.ports.ClientRepositoryPort;
 import com.test.vaudoise.domain.ports.ContractRepositoryPort;
@@ -54,5 +55,10 @@ public class BeanConfig {
     @Bean
     UpdateContractCostUseCase updateContractCostUseCase(ContractRepositoryPort contractRepositoryPort) {
         return new UpdateContractCostUseCase(contractRepositoryPort);
+    }
+
+    @Bean
+    FindContractsByClientUseCase findContractsByClientUseCase(ContractRepositoryPort contractRepositoryPort, ClientRepositoryPort clientRepository) {
+        return new FindContractsByClientUseCase(clientRepository, contractRepositoryPort);
     }
 }
