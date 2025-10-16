@@ -1,6 +1,7 @@
 package com.test.vaudoise.infrastructure.web.controller;
 
 import com.test.vaudoise.application.clientusecases.CreateClientUseCase;
+import com.test.vaudoise.application.clientusecases.DeleteClientUseCase;
 import com.test.vaudoise.application.clientusecases.ReadClientUseCase;
 import com.test.vaudoise.application.clientusecases.UpdateClientUseCase;
 import com.test.vaudoise.domain.model.client.ClientId;
@@ -24,11 +25,13 @@ public class ClientController {
     private final CreateClientUseCase createClientUseCase;
     private final ReadClientUseCase readClientUseCase;
     private final UpdateClientUseCase updateClientUseCase;
+    private final DeleteClientUseCase deleteClientUseCase;
 
-    public ClientController(CreateClientUseCase createClientUseCase, ReadClientUseCase readClientUseCase, UpdateClientUseCase updateClientUseCase) {
+    public ClientController(CreateClientUseCase createClientUseCase, ReadClientUseCase readClientUseCase, UpdateClientUseCase updateClientUseCase, DeleteClientUseCase deleteClientUseCase) {
         this.createClientUseCase = createClientUseCase;
         this.readClientUseCase = readClientUseCase;
         this.updateClientUseCase = updateClientUseCase;
+        this.deleteClientUseCase = deleteClientUseCase;
     }
 
     @PostMapping("/person")
@@ -55,6 +58,12 @@ public class ClientController {
     public ResponseEntity<ClientResponse> updateClient(@PathVariable UUID id, @Valid @RequestBody UpdateClientRequest req) {
         var updated = updateClientUseCase.execute(new ClientId(id), req.name(), req.email(), req.phone());
         return ResponseEntity.ok(ClientMapper.toResponse(updated));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteClient(@PathVariable UUID id) {
+        deleteClientUseCase.execute(new ClientId(id));
+        return ResponseEntity.noContent().build();
     }
 
 }

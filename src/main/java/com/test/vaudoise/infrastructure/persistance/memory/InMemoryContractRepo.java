@@ -1,11 +1,15 @@
 package com.test.vaudoise.infrastructure.persistance.memory;
 
+import com.test.vaudoise.domain.model.client.ClientId;
 import com.test.vaudoise.domain.model.contrat.Contract;
 import com.test.vaudoise.domain.ports.ContractRepositoryPort;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class InMemoryContractRepo  implements ContractRepositoryPort {
 
@@ -15,5 +19,15 @@ public class InMemoryContractRepo  implements ContractRepositoryPort {
     public Contract save(Contract contract) {
         storage.put(contract.id().value(), contract);
         return contract;
+    }
+
+
+    @Override
+    public List<Contract> findActiveByClientId(ClientId clientId) {
+        LocalDate today = LocalDate.now();
+        return storage.values().stream()
+                .filter(c -> c.getClientId().equals(clientId))
+                .filter(c -> c.endDate() == null || c.endDate().isAfter(today))
+                .collect(Collectors.toList());
     }
 }

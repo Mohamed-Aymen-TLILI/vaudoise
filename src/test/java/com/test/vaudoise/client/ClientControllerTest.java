@@ -2,6 +2,7 @@ package com.test.vaudoise.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.vaudoise.application.clientusecases.CreateClientUseCase;
+import com.test.vaudoise.application.clientusecases.DeleteClientUseCase;
 import com.test.vaudoise.application.clientusecases.ReadClientUseCase;
 import com.test.vaudoise.application.clientusecases.UpdateClientUseCase;
 import com.test.vaudoise.core.exception.NotFoundException;
@@ -25,6 +26,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -49,6 +51,9 @@ class ClientControllerTest {
     @MockitoBean
     private UpdateClientUseCase updateClientUseCase;
 
+    @MockitoBean
+    private DeleteClientUseCase deleteClientUseCase;
+
     @Test
     void should_create_person_and_return_201() throws Exception {
         var person = new Person(
@@ -59,7 +64,7 @@ class ClientControllerTest {
                 LocalDate.of(1990, 1, 1)
         );
 
-        Mockito.when(createClientUseCase.execute(Mockito.any(Person.class))).thenReturn(person);
+        Mockito.when(createClientUseCase.execute(any(Person.class))).thenReturn(person);
 
         var request = new CreatePersonRequest("Mohamed Aymen TLILI", "matlili@example.com", "+41791234567", LocalDate.of(1990, 1, 1));
 
@@ -82,7 +87,7 @@ class ClientControllerTest {
                 new CompanyIdentifier("vaa-123")
         );
 
-        Mockito.when(createClientUseCase.execute(Mockito.any(Company.class))).thenReturn(company);
+        Mockito.when(createClientUseCase.execute(any(Company.class))).thenReturn(company);
 
         var request = new CreateCompanyRequest(
                 "Vaudoise Assurances",
@@ -111,7 +116,7 @@ class ClientControllerTest {
                 "vaa-123"
         );
 
-        Mockito.when(createClientUseCase.execute(Mockito.any(Company.class)))
+        Mockito.when(createClientUseCase.execute(any(Company.class)))
                 .thenThrow(new ValidationException("companyIdentifier already exists"));
 
         mvc.perform(post("/api/clients/company")
@@ -295,7 +300,7 @@ class ClientControllerTest {
     void should_return_400_when_client_not_found() throws Exception {
         var id = UUID.randomUUID();
 
-        Mockito.when(readClientUseCase.execute(Mockito.any(ClientId.class)))
+        Mockito.when(readClientUseCase.execute(any(ClientId.class)))
                 .thenThrow(new NotFoundException("Client not found"));
 
         mvc.perform(get("/api/clients/" + id))
@@ -316,7 +321,7 @@ class ClientControllerTest {
                 LocalDate.of(1990, 1, 1)
         );
 
-        Mockito.when(updateClientUseCase.execute(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+        Mockito.when(updateClientUseCase.execute(any(), any(), any(), any()))
                 .thenReturn(person);
 
         var req = new UpdateClientRequest("Updated Name", "updated@example.com", "+41795551234");
@@ -333,7 +338,7 @@ class ClientControllerTest {
     void should_return_404_when_client_not_found() throws Exception {
         var id = UUID.randomUUID();
 
-        Mockito.when(updateClientUseCase.execute(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+        Mockito.when(updateClientUseCase.execute(any(), any(), any(), any()))
                 .thenThrow(new NotFoundException("Client not found"));
 
         var req = new UpdateClientRequest("Name", "email@example.com", "+41795551234");
@@ -341,6 +346,26 @@ class ClientControllerTest {
         mvc.perform(put("/api/clients/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("Client not found"));
+    }
+
+    @Test
+    void should_delete_client_and_return_204() throws Exception {
+        Mockito.doNothing().when(deleteClientUseCase).execute(any());
+
+        mvc.perform(delete("/api/clients/" + UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void should_return_404_when_delete_client_not_found() throws Exception {
+        Mockito.doThrow(new NotFoundException("Client not found"))
+                .when(deleteClientUseCase).execute(any());
+
+        mvc.perform(delete("/api/clients/" + UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").value("Client not found"));
     }

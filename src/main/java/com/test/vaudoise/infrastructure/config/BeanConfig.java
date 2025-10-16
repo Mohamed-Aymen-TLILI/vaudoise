@@ -1,6 +1,7 @@
 package com.test.vaudoise.infrastructure.config;
 
 import com.test.vaudoise.application.clientusecases.CreateClientUseCase;
+import com.test.vaudoise.application.clientusecases.DeleteClientUseCase;
 import com.test.vaudoise.application.clientusecases.ReadClientUseCase;
 import com.test.vaudoise.application.clientusecases.UpdateClientUseCase;
 import com.test.vaudoise.application.contractusecases.CreateContractUseCase;
@@ -43,4 +44,9 @@ public class BeanConfig {
     CreateContractUseCase createContractUseCase(ContractRepositoryPort contractRepositoryPort, ClientRepositoryPort clientRepository) {
         return new CreateContractUseCase(contractRepositoryPort, clientRepository);
     }
+
+    @Bean
+    DeleteClientUseCase deleteClientUseCase(ClientRepositoryPort clientRepository, ContractRepositoryPort contractRepositoryPort ) {
+        return new DeleteClientUseCase(clientRepository, contractRepositoryPort);
+    };
 }

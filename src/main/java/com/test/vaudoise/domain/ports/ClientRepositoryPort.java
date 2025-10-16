@@ -10,4 +10,5 @@ public interface ClientRepositoryPort {
     Client save(Client c);
     boolean existsCompanyIdentifier(CompanyIdentifier companyId);
     Optional<Client> findById(ClientId id);
+    Optional<Client> delete(ClientId id);
 }

@@ -40,5 +40,14 @@ public class InMemoryClientRepo implements ClientRepositoryPort {
             return Optional.ofNullable(byId.get(id.value()));
         }
 
+    @Override
+    public Optional<Client> delete(ClientId id) {
+        Client removed = byId.remove(id.value());
+        if (removed instanceof Company co) {
+            byCompanyId.remove(co.companyIdentifier().value());
+        }
+        return Optional.ofNullable(removed);
+    }
+
 
 }
