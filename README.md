@@ -23,6 +23,32 @@ This structure guarantees that the **domain** remains **independent** from frame
 
 ---
 
+##  Why It Works
+
+Domain is framework-agnostic (pure Java, no Spring dependency).  
+Repositories are injected via interfaces → persistence easily replaceable.  
+Flyway ensures consistent and versioned database schema.  
+Unit & integration tests validate every layer.  
+Tests cover domain, use cases, controllers and adapters, proving behavior and maintainability.
+Switching from InMemory to PostgreSQL required only new adapters — no change in business logic.
+
+---
+##  Proof of Architecture Independence
+
+Initially implemented with:
+
+- `InMemoryClientRepo`
+- `InMemoryContractRepo`
+
+Then switched to:
+
+- `JpaClientRepository`
+- `JpaContractRepository`
+
+No change to domain, controllers, or use cases — true separation of concerns.
+
+---
+
 ##  Run Locally
 ### 1. Prerequisites
 
@@ -65,6 +91,46 @@ Once running, open:
 - OpenAPI Docs → [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
 
 ---
+
+## Manual DB Setup (without Docker)
+
+If you already have a local PostgreSQL instance, set credentials and DB name, then run.
+
+**Create DB & user (example in psql):**
+```sql
+CREATE DATABASE vaudoise;
+CREATE USER vaudoise_user WITH ENCRYPTED PASSWORD 'vaudoise_pwd';
+GRANT ALL PRIVILEGES ON DATABASE vaudoise TO vaudoise_user;
+```
+
+**Option A — Environment variables:**
+```bash
+export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/vaudoise
+export SPRING_DATASOURCE_USERNAME=vaudoise_user
+export SPRING_DATASOURCE_PASSWORD=vaudoise_pwd
+mvn clean spring-boot:run
+```
+
+**Option B — `application-local.properties`** (create at `src/main/resources`):
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/vaudoise
+spring.datasource.username=vaudoise_user
+spring.datasource.password=vaudoise_pwd
+
+spring.jpa.hibernate.ddl-auto=validate
+spring.flyway.enabled=true
+```
+Run with:
+```bash
+mvn clean spring-boot:run -Dspring-boot.run.profiles=local
+```
+
+> 💡 **Flyway** applies all migrations automatically at startup (V1…Vn).  
+> If you previously ran another version and see a **checksum mismatch**, either recreate your local DB or run **Flyway repair**.  
+> With Docker compose: `docker compose down -v && docker compose up -d` to reset the data volume.
+
+---
+
 
 ##  Example API Requests
 
@@ -119,16 +185,6 @@ GET /api/contracts/clients/{clientId}/contracts/total-active-cost
 
 ---
 
-##  Why It Works
-
- Domain is framework-agnostic (pure Java, no Spring dependency).  
- Repositories are injected via interfaces → persistence easily replaceable.  
- Flyway ensures consistent and versioned database schema.  
- Unit & integration tests validate every layer.  
- Switching from InMemory to PostgreSQL required only new adapters — no change in business logic.
-
----
-
 ##  Run Tests
 
 ```bash
@@ -142,7 +198,7 @@ Expected output:
  T E S T S
 -------------------------------------------------------
 Results:
-Tests run: 87, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 89, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
 
@@ -152,35 +208,6 @@ BUILD SUCCESS
 - REST controllers (MockMvc)
 - InMemory & JPA repository implementations
 
----
-
-##  Tech Stack
-
-| Layer | Technology |
-|-------|-------------|
-| Framework | Spring Boot 3.5.6 |
-| Language | Java 21 |
-| Database | PostgreSQL 15 |
-| Migration | Flyway |
-| API Docs | Springdoc OpenAPI (Swagger) |
-| Testing | JUnit 5, Mockito |
-| Packaging | Maven |
-
----
-
-##  Proof of Architecture Independence
-
-Initially implemented with:
-
-- `InMemoryClientRepo`
-- `InMemoryContractRepo`
-
-Then switched to:
-
-- `JpaClientRepository`
-- `JpaContractRepository`
-
- No change to domain, controllers, or use cases — true separation of concerns.
 
 ---
 

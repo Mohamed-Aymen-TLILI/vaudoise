@@ -13,6 +13,7 @@ import com.test.vaudoise.infrastructure.web.mapper.contract.ContractMapper;
 import com.test.vaudoise.infrastructure.web.mapper.contract.ContractRequestMapper;
 import com.test.vaudoise.infrastructure.web.mapper.contract.UpdateCostRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -42,7 +43,11 @@ public class ContractController {
         this.getTotalActiveCostUseCase = getTotalActiveCostUseCase;
     }
 
-    @Operation(summary = "Create a new contract", description = "Creates a contract for a given client")
+    @Operation(summary = "Create a new contract", description = "Creates a contract for a given client",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "contract created successfully"),
+                    @ApiResponse(responseCode = "400", description = "Validation failed")
+            })
     @PostMapping("/create-new")
     public ResponseEntity<ContractResponse> create(@Valid @RequestBody CreateContractRequest request) {
         Contract saved = createContractUseCase.execute(ContractRequestMapper.toDomain(request));
@@ -51,7 +56,12 @@ public class ContractController {
                 .body(ContractMapper.toResponse(saved));
     }
 
-    @Operation(summary = "Update the cost of an existing contract")
+    @Operation(summary = "Update the cost of an existing contract",
+            description = "Updates the cost of an existing contract",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "the cost updated successfully"),
+                    @ApiResponse(responseCode = "400", description = "Validation failed")
+            })
     @PutMapping("/{id}/cost")
     public ResponseEntity<ContractResponse> updateCost(
             @PathVariable UUID id,

@@ -23,8 +23,12 @@ public class JpaClientRepository implements ClientRepositoryPort {
     @Override
     public Client save(Client client) {
         if (client instanceof Company co) {
-            if (repo.findByCompanyIdentifier(co.companyIdentifier().value()).isPresent()) {
-                throw new ValidationException("companyIdentifier already exists");
+            var found = repo.findByCompanyIdentifier(co.companyIdentifier().value());
+            if (found.isPresent()) {
+                var foundId = found.get().getId();
+                if (!foundId.equals(co.id().value())) {
+                    throw new ValidationException("companyIdentifier already exists");
+                }
             }
         }
         var entity = ClientEntityMapper.toEntity(client);

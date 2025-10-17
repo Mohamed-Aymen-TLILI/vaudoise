@@ -5,6 +5,7 @@ import com.test.vaudoise.domain.model.client.ClientId;
 import com.test.vaudoise.domain.model.contrat.Contract;
 import com.test.vaudoise.domain.ports.ClientRepositoryPort;
 import com.test.vaudoise.domain.ports.ContractRepositoryPort;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class DeleteClientUseCase {
         this.contractRepo = contractRepo;
     }
 
+    @Transactional
     public void execute(ClientId clientId) {
         clientRepo.findById(clientId).orElseThrow(() -> new NotFoundException("Client not found"));
         List<Contract> activeContracts = contractRepo.findActiveByClientId(clientId);

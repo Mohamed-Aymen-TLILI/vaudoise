@@ -23,6 +23,9 @@ public class FindContractsByClientUseCase {
         clientRepo.findById(clientId)
                 .orElseThrow(() -> new NotFoundException("Client not found"));
 
+        if (updatedAfter == null) {
+            return contractRepo.findActiveByClientId(clientId);
+        }
         return contractRepo.findByClientIdAndUpdatedAfter(clientId, updatedAfter);
     }
 }

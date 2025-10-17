@@ -48,25 +48,31 @@ public class ClientController {
     )
     @PostMapping("/person")
     public ResponseEntity<ClientResponse> createPerson(@Valid @RequestBody CreatePersonRequest req) {
-        var id = new ClientId(UUID.randomUUID());
         var saved = createClientUseCase.execute(ClientRequestMapper.toDomain(req));
         return ResponseEntity.status(HttpStatus.CREATED).body(ClientMapper.toResponse(saved));
     }
 
     @Operation(
             summary = "Create a new company client",
-            description = "Registers a new company in the system"
+            description = "Registers a new company in the system",
+            responses = {
+                @ApiResponse(responseCode = "201", description = "Client created successfully"),
+                @ApiResponse(responseCode = "400", description = "Validation failed")
+            }
     )
     @PostMapping("/company")
     public ResponseEntity<ClientResponse> createCompany(@Valid @RequestBody CreateCompanyRequest req) {
-        var id = new ClientId(UUID.randomUUID());
         var saved = createClientUseCase.execute(ClientRequestMapper.toDomain(req));
         return ResponseEntity.status(HttpStatus.CREATED).body(ClientMapper.toResponse(saved));
     }
 
     @Operation(
             summary = "Retrieve a client by ID",
-            description = "Fetches client details using UUID"
+            description = "Fetches client details using UUID",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Client by ID retrieved successfully"),
+                    @ApiResponse(responseCode = "400", description = "Validation failed")
+            }
     )
     @GetMapping("/{id}")
     public ResponseEntity<ClientResponse> getClient(@PathVariable UUID id) {
@@ -76,7 +82,11 @@ public class ClientController {
 
     @Operation(
             summary = "Update client information",
-            description = "Updates an existing client's contact information"
+            description = "Updates an existing client's contact information",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Client Updated successfully"),
+                    @ApiResponse(responseCode = "400", description = "Validation failed")
+            }
     )
     @PutMapping("/{id}")
     public ResponseEntity<ClientResponse> updateClient(@PathVariable UUID id, @Valid @RequestBody UpdateClientRequest req) {
@@ -86,7 +96,11 @@ public class ClientController {
 
     @Operation(
             summary = "Delete a client by ID",
-            description = "Removes a client and ends all active contracts"
+            description = "Removes a client and ends all active contracts",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Client removed successfully"),
+                    @ApiResponse(responseCode = "400", description = "Validation failed")
+            }
     )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteClient(@PathVariable UUID id) {

@@ -19,7 +19,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 public class FindContractsByClientUseCaseTest {
 
@@ -43,7 +44,7 @@ public class FindContractsByClientUseCaseTest {
         var c2 = new Contract(new ContractId(UUID.randomUUID()), clientId, LocalDate.now(), null, BigDecimal.valueOf(200));
 
         when(clientRepo.findById(clientId)).thenReturn(Optional.of(client));
-        when(contractRepo.findByClientIdAndUpdatedAfter(clientId, null)).thenReturn(List.of(c1, c2));
+        when(contractRepo.findActiveByClientId(clientId)).thenReturn(List.of(c1, c2));
 
         var result = usecase.execute(clientId, null);
 
@@ -51,6 +52,28 @@ public class FindContractsByClientUseCaseTest {
         assertThat(result).extracting(Contract::getCostAmount)
                 .containsExactlyInAnyOrder(BigDecimal.valueOf(100), BigDecimal.valueOf(200));
     }
+
+    @Test
+    void filters_active_contracts_by_updatedAfter() {
+        var clientId = new ClientId(UUID.randomUUID());
+        var client = new Person(clientId, new Name("Aymen"), new Email("a@mail.com"), new Phone("+41790000000"),
+                LocalDate.of(1990, 1, 1));
+
+        var c = new Contract(new ContractId(UUID.randomUUID()), clientId, LocalDate.now(), null, BigDecimal.valueOf(200));
+        c.updateCost(BigDecimal.valueOf(250));
+
+        var after = c.getLastUpdateDate().minusSeconds(1);
+
+        when(clientRepo.findById(clientId)).thenReturn(Optional.of(client));
+        when(contractRepo.findByClientIdAndUpdatedAfter(clientId, after)).thenReturn(List.of(c));
+
+        var result = usecase.execute(clientId, after);
+
+        assertThat(result).extracting(Contract::getCostAmount).containsExactly(BigDecimal.valueOf(250));
+        verify(contractRepo).findByClientIdAndUpdatedAfter(clientId, after);
+        verify(contractRepo, never()).findActiveByClientId(any());
+    }
+
 
     @Test
     void should_filter_contracts_by_update_date() {

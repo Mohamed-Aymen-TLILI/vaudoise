@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
 
 public class DeleteClientUseCaseTest {
@@ -62,4 +63,27 @@ public class DeleteClientUseCaseTest {
 
         verify(contractRepo, never()).findActiveByClientId(any());
     }
+
+    @Test
+    void deleting_client_closes_active_contracts_then_deletes_client() {
+        var clientId = new ClientId(UUID.randomUUID());
+        var client = new Person(clientId, new Name("Aymen"), new Email("a@mail.com"),
+                new Phone("+41790000000"), LocalDate.of(1990,1,1));
+
+        var c1 = new Contract(new ContractId(UUID.randomUUID()), clientId, LocalDate.now(), null, new BigDecimal("100"));
+        var c2 = new Contract(new ContractId(UUID.randomUUID()), clientId, LocalDate.now(), null, new BigDecimal("200"));
+
+        when(clientRepo.findById(clientId)).thenReturn(Optional.of(client));
+        when(contractRepo.findActiveByClientId(clientId)).thenReturn(List.of(c1, c2));
+
+        useCase.execute(clientId);
+
+        assertThat(c1.endDate()).isEqualTo(LocalDate.now());
+        assertThat(c2.endDate()).isEqualTo(LocalDate.now());
+
+        verify(contractRepo).save(c1);
+        verify(contractRepo).save(c2);
+        verify(clientRepo).delete(clientId);
+    }
+
 }

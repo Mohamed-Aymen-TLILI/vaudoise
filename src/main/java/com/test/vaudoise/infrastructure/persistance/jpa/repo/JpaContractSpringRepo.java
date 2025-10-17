@@ -22,8 +22,8 @@ public interface JpaContractSpringRepo extends JpaRepository<ContractEntity, UUI
     @Query("""
         SELECT c FROM ContractEntity c
         WHERE c.clientId = :clientId
-        AND (c.endDate IS NULL OR c.endDate > CURRENT_DATE)
-        AND (:updatedAfter IS NULL OR c.lastUpdateDate > :updatedAfter)
+          AND (c.endDate IS NULL OR c.endDate > CURRENT_DATE)
+          AND c.lastUpdateDate > :updatedAfter
     """)
     List<ContractEntity> findByClientIdAndUpdatedAfter(
             @Param("clientId") UUID clientId,
