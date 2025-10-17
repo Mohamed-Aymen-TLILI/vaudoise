@@ -99,23 +99,23 @@ If you already have a local PostgreSQL instance, set credentials and DB name, th
 **Create DB & user (example in psql):**
 ```sql
 CREATE DATABASE vaudoise;
-CREATE USER vaudoise_user WITH ENCRYPTED PASSWORD 'vaudoise_pwd';
-GRANT ALL PRIVILEGES ON DATABASE vaudoise TO vaudoise_user;
+CREATE USER postgres WITH ENCRYPTED PASSWORD 'monpassword';
+GRANT ALL PRIVILEGES ON DATABASE vaudoise TO postgres;
 ```
 
 **Option A — Environment variables:**
 ```bash
 export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/vaudoise
-export SPRING_DATASOURCE_USERNAME=vaudoise_user
-export SPRING_DATASOURCE_PASSWORD=vaudoise_pwd
+export SPRING_DATASOURCE_USERNAME=postgres
+export SPRING_DATASOURCE_PASSWORD=monpassword
 mvn clean spring-boot:run
 ```
 
 **Option B — `application-local.properties`** (create at `src/main/resources`):
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/vaudoise
-spring.datasource.username=vaudoise_user
-spring.datasource.password=vaudoise_pwd
+spring.datasource.username=postgres
+spring.datasource.password=monpassword
 
 spring.jpa.hibernate.ddl-auto=validate
 spring.flyway.enabled=true
