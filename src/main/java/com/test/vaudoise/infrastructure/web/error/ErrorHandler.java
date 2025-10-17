@@ -1,6 +1,5 @@
 package com.test.vaudoise.infrastructure.web.error;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.test.vaudoise.core.exception.NotFoundException;
 import com.test.vaudoise.core.exception.ValidationException;
 import org.springframework.http.HttpStatus;
@@ -20,21 +19,26 @@ import java.util.Map;
 public class ErrorHandler {
 
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<Map<String, Object>> handleDomainValidation(ValidationException ex) {
-        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    public ResponseEntity<Map<String, Object>> domainValidation(ValidationException ex) {
+        return ResponseEntity.badRequest().body(Map.of(
+                "error", ex.getMessage()
+        ));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, Object>> handleBadRequest(IllegalArgumentException ex) {
-        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    public ResponseEntity<Map<String, Object>> badRequest(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(Map.of(
+                "error", ex.getMessage()
+        ));
     }
 
-    @ExceptionHandler(InvalidFormatException.class)
-    public ResponseEntity<Map<String, Object>> handleInvalidFormat(InvalidFormatException ex) {
+    @ExceptionHandler(com.fasterxml.jackson.databind.exc.InvalidFormatException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidFormat(com.fasterxml.jackson.databind.exc.InvalidFormatException ex) {
         if (ex.getTargetType().equals(LocalDate.class)) {
-            return buildResponse(HttpStatus.BAD_REQUEST, "Invalid date format, expected yyyy-MM-dd");
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Invalid date format, expected ISO 8601 (yyyy-MM-dd)"));
         }
-        return buildResponse(HttpStatus.BAD_REQUEST, ex.getOriginalMessage());
+        return ResponseEntity.badRequest().body(Map.of("error", ex.getOriginalMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -59,22 +63,9 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleNotFound(NotFoundException ex) {
-        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error: " + ex.getMessage());
-    }
-
-    private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now().toString());
-        body.put("status", status.value());
-        body.put("error", status.getReasonPhrase());
-        body.put("message", message);
-        return ResponseEntity.status(status).body(body);
+    public ResponseEntity<Map<String,Object>> notFound(NotFoundException ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", ex.getMessage()));
     }
 
     private String formatMessage(FieldError err) {
@@ -82,7 +73,8 @@ public class ErrorHandler {
         if (msg == null) return "Invalid value";
 
         return switch (msg) {
-            case "must not be blank", "must not be null" -> "is required";
+            case "must not be blank" -> "is required";
+            case "must not be null" -> "is required";
             case "must be a well-formed email address" -> "is not a valid email";
             default -> msg;
         };
